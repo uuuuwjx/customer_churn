@@ -164,6 +164,12 @@ python src/predict.py --mode single --model lgb
 # 方式 4：从头训练
 python src/train_final.py                   # 训练 + 评估（用最优参数）
 ```
+### 注意
+| 数据文件                      | 获取方式                                        |
+| ------------------------- | ------------------------------------------- |
+| `data/customer_churn.csv` | 从 [Kaggle Telco Churn](链接) 下载，放入 `data/` 目录 |
+| `data/processed/`         | 运行 `02_feature_engineering.ipynb` 自动生成              |
+| `results/`                | 运行 `src/` 目录下文件生成                            |
 
 ---
 
