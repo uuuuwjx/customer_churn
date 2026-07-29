@@ -1,0 +1,34 @@
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter 缓存
+.ipynb_checkpoints/
+
+# 虚拟环境
+venv/
+.env
+
+# IDE 配置
+.vscode/
+.idea/
+
+# 数据文件（太大，不上传）
+data/
+
+# 模型文件和结果（二进制，不上传）
+models/
+results/
+*.joblib
+
+# 报告图表（可重新生成）
+reports/*.png
+reports/*.html
+
+# 个人笔记（保留在本地）
+else_notes*.md
+
+# 系统文件
+.DS_Store
+Thumbs.db
