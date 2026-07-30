@@ -264,8 +264,10 @@ Logistic Regression       0.16   0.6820    0.4513 0.9171 0.6049  0.8371 0.5227  
 - Electronic check 流失率最高；自动扣款流失率最低
 
   后续可以提出针对性的策略。
-  ![1785378880127](image/README/1785378880127.png)
-  ![1785378984762](image/README/1785378984762.png)
+
+![流失率图](reports/churn_rate.png)
+![箱线图](reports/tenure.png)
+
 
 ---
 
