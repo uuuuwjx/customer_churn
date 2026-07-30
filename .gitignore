@@ -14,11 +14,8 @@ venv/
 .vscode/
 .idea/
 
-# 数据文件（太大，不上传）
-data/
 
 # 模型文件和结果（二进制，不上传）
-models/
 results/
 *.joblib
 
