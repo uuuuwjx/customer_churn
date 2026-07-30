@@ -10,6 +10,7 @@
 - 最强召回：**Random Forest**（Recall 92.25%）
 - 最高 AUC：**LightGBM**（ROC-AUC 0.8455）
 - Top 5 流失驱动因素：在网时长、合同类型、月费、互联网服务类型、在线安全
+
 ## 模型对比结果
 
 
@@ -27,6 +28,7 @@
 ## 特征重要性
 
 ![特征重要性 Top 10](reports/feature_importance.png)
+
 ## 数据背景说明
 
 本数据集来源于 **IBM Watson Analytics** 社区公开的经典案例，模拟了一家为美国加州地区提供**家庭电话和互联网服务**的电信公司。
@@ -109,7 +111,10 @@ customer_churn(re)/
     ├── model_comparison_final.png      # 最终模型对比
     ├── feature_importance.png          # 特征重要性
     ├── confusion_matrics.png           # 混淆矩阵图
-    └── roc_curves.png                  # roc曲线图
+    ├── roc_curves.png                  # roc曲线图
+    ├── churn_rate.png                  # 各特征流失率图
+    ├── tenure.png                      # 箱线图
+    └── churn.png                       # 流失比例图
 ```
 
 ---
@@ -185,7 +190,9 @@ python src/predict.py --mode single --model lgb
 # 方式 4：从头训练
 python src/train_final.py                   # 训练 + 评估（用最优参数）
 ```
+
 例：
+
 ```bash
 PS ...\customer_churn> python main.py report
 
@@ -198,34 +205,35 @@ Logistic Regression       0.16   0.6820    0.4513 0.9171 0.6049  0.8371 0.5227  
             XGBoost       0.32   0.6615    0.4349 0.9198 0.5906  0.8453 0.5330      $127,300
            LightGBM       0.16   0.6686    0.4398 0.9091 0.5929  0.8455 0.5422      $126,700
 ```
+
 ### 注意
-| 数据文件                      | 获取方式                                        |
-| ------------------------- | ------------------------------------------- |
-| `data/customer_churn.csv` | 从 [Kaggle Telco Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) 下载，放入 `data/` 目录 |
-| `data/processed/`         | 运行 `02_feature_engineering.ipynb` 自动生成              |
-| `results/`                | 运行 `src/` 目录下文件生成                            |
+
+
+| 数据文件                  | 获取方式                                                                                                       |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `data/customer_churn.csv` | 从[Kaggle Telco Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) 下载，放入 `data/` 目录 |
+| `data/processed/`         | 运行`02_feature_engineering.ipynb` 自动生成                                                                    |
+| `results/`                | 运行`src/` 目录下文件生成                                                                                      |
+
 ---
-
-
 
 ### ROC-AUC 水平评估
 
 对于该 Telco 公开数据集，ROC-AUC 0.84-0.85 属于**正常优秀水平**（业界 benchmark 通常 0.83-0.87）。四个模型间差距仅 0.008，说明特征工程质量比模型选择更重要。
 
 ![roc图](reports/roc_curves.png)
----
+--------------------------------
 
 ## 模型选型结论
 
 
-| 场景                   | 推荐模型                    | 理由                            |
-| -------------------- | ----------------------- | ----------------------------- |
-| 追求可解释性               | Logistic Regression     | 每个特征有权重系数，可直接解读               |
-| 追求最高召回               | Random Forest       | Recall 92.25%，综合指标优秀          |
-| 追求最大业务收益             | Logistic Regression     | \$129,800                     |
-| 生产环境上线（速度/成本优先）  | Logistic Regression | 模型仅 2.5KB，单条推理 <1ms，适合边缘部署    |
-| 追求最高 AUC/大规模批量预测 | LightGBM            | ROC-AUC 0.8455，叶子编码优化，批量推理吞吐高 |
-
+| 场景                          | 推荐模型            | 理由                                         |
+| ------------------------------- | --------------------- | ---------------------------------------------- |
+| 追求可解释性                  | Logistic Regression | 每个特征有权重系数，可直接解读               |
+| 追求最高召回                  | Random Forest       | Recall 92.25%，综合指标优秀                  |
+| 追求最大业务收益              | Logistic Regression | \$129,800                                    |
+| 生产环境上线（速度/成本优先） | Logistic Regression | 模型仅 2.5KB，单条推理 <1ms，适合边缘部署    |
+| 追求最高 AUC/大规模批量预测   | LightGBM            | ROC-AUC 0.8455，叶子编码优化，批量推理吞吐高 |
 
 ---
 
@@ -245,7 +253,6 @@ Logistic Regression       0.16   0.6820    0.4513 0.9171 0.6049  0.8371 0.5227  
 | 9    | TechSupport      | 技术支持（没有→问题无法解决→流失）       |
 | 10   | PaperlessBilling | 电子账单（可能被忽略→欠费→流失）         |
 
-
 ---
 
 ## 主要发现
@@ -257,8 +264,9 @@ Logistic Regression       0.16   0.6820    0.4513 0.9171 0.6049  0.8371 0.5227  
 - Electronic check 流失率最高；自动扣款流失率最低
 
   后续可以提出针对性的策略。
-![1785378880127](image/README/1785378880127.png)
-![1785378984762](image/README/1785378984762.png)
+  ![1785378880127](image/README/1785378880127.png)
+  ![1785378984762](image/README/1785378984762.png)
+
 ---
 
 ## 编码策略说明
@@ -285,7 +293,9 @@ Logistic Regression       0.16   0.6820    0.4513 0.9171 0.6049  0.8371 0.5227  
 树模型保留 `tenure`（能自动找到最优切分点），也保留 `TenureGroup`（作为类别特征辅助分裂）。
 
 ## License
+
 MIT
 
 ## Author
-[wjx] - [2183276465@qq.com] 
+
+[wjx] - [2183276465@qq.com]
