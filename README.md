@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-基于 IBM Watson Analytics 的电信客户流失数据集，构建机器学习模型预测客户流失风险，并制定数据驱动的客户挽留策略。
+基于 IBM Watson Analytics 的电信客户流失数据集，构建机器学习模型预测客户流失风险。
 
 **核心结论**：
 
@@ -49,6 +49,8 @@
 | `MonthlyCharges`   | 月均费用（美元）          | 客户每个月需要支付的费用总额（基于当前套餐）。范围约 18~120 美元。                                                                                                         |
 | `TotalCharges`     | 历史总费用（美元）        | 客户从入网至今累计支付给该公司的总费用。                                                                                                                                   |
 | `Churn`            | 是否流失（目标变量）      | 取值`Yes`表示客户在观测期末已离网（流失），`No`表示客户仍为活跃用户。**本项目的预测目标。                                                                                  |
+
+![1785378693435](image/README/1785378693435.png)
 
 ---
 
@@ -119,6 +121,7 @@ pip install -r requirements.txt
     │   - TotalCharges 类型转换
     │   - 空白值填充 (tenure=0)
     │   - 去除空格
+    |   - 检查异常值
     │
     ├── 特征工程 (notebooks/02_feature_engineering.ipynb)
     │   - Churn: Yes/No → 1/0
@@ -164,7 +167,25 @@ python src/predict.py --mode single --model lgb
 # 方式 4：从头训练
 python src/train_final.py                   # 训练 + 评估（用最优参数）
 ```
+例：
+```bash
+PS ...\customer_churn> python main.py report
 
+==========================================================================================
+  最终模型对比结果（最优阈值）
+==========================================================================================
+              Model  Threshold Accuracy Precision Recall     F1 ROC-AUC     KS Business Gain
+Logistic Regression       0.16   0.6820    0.4513 0.9171 0.6049  0.8371 0.5227      $129,800
+      Random Forest       0.26   0.6444    0.4223 0.9225 0.5793  0.8434 0.5457      $125,300
+            XGBoost       0.32   0.6615    0.4349 0.9198 0.5906  0.8453 0.5330      $127,300
+           LightGBM       0.16   0.6686    0.4398 0.9091 0.5929  0.8455 0.5422      $126,700
+```
+### 注意
+| 数据文件                      | 获取方式                                        |
+| ------------------------- | ------------------------------------------- |
+| `data/customer_churn.csv` | 从 [Kaggle Telco Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) 下载，放入 `data/` 目录 |
+| `data/processed/`         | 运行 `02_feature_engineering.ipynb` 自动生成              |
+| `results/`                | 运行 `src/` 目录下文件生成                            |
 ---
 
 ## 模型对比结果
@@ -177,7 +198,7 @@ python src/train_final.py                   # 训练 + 评估（用最优参数�
 | XGBoost             | 0.32 | 0.6615   | 0.4349    | 0.9198     | 0.5906     | 0.8453     | 0.5330     | $127,300     |
 | LightGBM            | 0.16 | 0.6686   | 0.4398    | 0.9091     | **0.5929** | **0.8455** | **0.5422** | $126,700     |
 
-> **业务收益假设**：成功挽留一位流失客户收益 $500，错误干预一位非流失客户成本 $100。所有模型通过阈值优化后，Recall 均达到 85%+，确保不遗漏高风险客户。
+> **业务收益假设**：成功挽留一位流失客户收益 $500，错误干预一位非流失客户成本 $100。所有模型通过阈值优化后，Recall 均达到 85%+，确保不遗漏高风险客户。业务收益 = TP × 500 − FP × 100。
 
 ### ROC-AUC 水平评估
 
@@ -193,7 +214,7 @@ python src/train_final.py                   # 训练 + 评估（用最优参数�
 | 追求可解释性             | Logistic Regression | 每个特征有权重系数，可直接解读       |
 | 追求最高召回（不漏流失） | **Random Forest**   | Recall 92.25%，综合指标优秀          |
 | 追求最大业务收益         | Logistic Regression | $129,800                             |
-| 生产环境上线（速度优先） | LightGBM            | 模型仅 731KB，推理极快，ROC-AUC 最高 |
+| 生产环境上线（速度优先） | Logistic Regression | 模型仅 2.5KB，推理最快；或 LightGBM（424KB，AUC 最高） |
 
 **综合推荐：Random Forest**，结合特征重要性可制定清晰的业务策略。
 
@@ -225,8 +246,9 @@ python src/train_final.py                   # 训练 + 评估（用最优参数�
 - 没有在线安全/技术支持的客户流失率更高
 - Electronic check 流失率最高；自动扣款流失率最低
 
-后续可以提出针对性的策略。
-
+  后续可以提出针对性的策略。
+![1785378880127](image/README/1785378880127.png)
+![1785378984762](image/README/1785378984762.png)
 ---
 
 ## 编码策略说明
