@@ -14,14 +14,13 @@ venv/
 .vscode/
 .idea/
 
+#data
+data/raw
+data/processed
 
 # 模型文件和结果（二进制，不上传）
 results/
 *.joblib
-
-# 报告图表（可重新生成）
-reports/*.png
-reports/*.html
 
 # 个人笔记（保留在本地）
 else_notes*.md
