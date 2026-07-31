@@ -294,6 +294,16 @@ Logistic Regression       0.16   0.6820    0.4513 0.9171 0.6049  0.8371 0.5227  
 
 树模型保留 `tenure`（能自动找到最优切分点），也保留 `TenureGroup`（作为类别特征辅助分裂）。
 
+## 待改进
+- train_final.py 只用了单次split，没有5-Fold CV，只调参时用了CV。
+- lightGBM早停定树数时，eval_set 用的是 X_test, y_test（最终测试集）,这会导致数据泄露，将原始训练集再分为训练集和验证集（如 80%/20%），用验证集做早停。
+- 四个 tune_*.py 高度重复，脚本结构几乎一样：加载数据 → split → baseline CV → search → 重新训练 → 保存。公共逻辑可以抽到 evaluate.py 或一个 BaseTuner 类，减少 60%+ 代码量。
+- 没有 Pipeline 封装
+- 没有 SHAP 分析，树模型的 feature_importances_ 只能说明特征"用了多少次分裂"，不告诉方向（高月费是推高还是降低流失概率）
+- LR系数显著性
+- 业务收益是假设的 $500/$100，做敏感性分析：不同挽留成本下的阈值变化
+- 特征工程只有 4 个衍生变量，可以做交互特征（Contract × tenure, InternetService × MonthlyCharges）
+
 ## License
 
 MIT
